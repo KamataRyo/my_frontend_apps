@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset='utf-8'>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
 	<title>A版B版x縮尺計算機</title>
 	<style>
-	.example{
+	/*.example{
 			font-style: italic;
 			color: red;
 			font-size: 0.7em;
@@ -36,27 +38,46 @@
 	}
 	#paperwrapper {
 		margin-left: 210px;
-	}
+	}*/
 	</style>
 </head>
 <body>
-<h1>縮尺計算機</h1>
-<p>地図を倍率を変えて印刷するときに縮尺を計算する</p>
-<div id="formwrapper">
-<h2>印刷前[in]</h2>
-<p>版: <input id="edition_in" type="text"><br /><span class="example">a0, A1, b2, B3, etc.</span></p>
-<p>縮尺: <input id="scale_in" type="text"><br /><span class="example">25000, 50000, 200000, etc.</span></p>
-<h2>印刷後[out]</h2>
-<p>版: <input id="edition_out" type="text"><br /><span class="example">a0, A1, b2, B3, etc.</span></p>
-<p>縮尺: <span id="result"></span></p>
-</div>
-<div id="paperwrapper">
-	<span id="in-text">in</span>
-	<span id="out-text">out</span>
-	<div id="paper-in"></div>
-	<div id="paper-out"></div>
-</div>
-<script src="bower_components/jquery/dist/jquery.min.js"></script>
-<script src="js/index.js"></script>
+<div data-role="page">
+
+	<div data-role="header">
+		<h1>縮尺計算機</h1>
+		<p>地図を倍率を変えて印刷するとき、縮尺がどうなるかを計算する</p>
+	</div><!--data-role="header"-->
+
+	<div data-role="content">
+		<div id="formwrapper">
+			<h2>印刷前</h2>
+			<p class="example">版（a0, A1, b2, B3, etc.）</p>
+			<input id="edition_in" type="text">
+			<p>縮尺（25000, 50000, 200000, etc.）</p>
+			<input id="scale_in" type="text">
+			<p class="example optional">距離（オプション）</p>
+			<input id="distance_in" class="optional" type="text">
+
+
+			<h2>印刷後</h2>
+			<p>版: <input id="edition_out" type="text"><br /><span class="example">a0, A1, b2, B3, etc.</span></p>
+			<p>縮尺: <span id="result"></span></p>
+		</div>
+		<div id="paperwrapper">
+			<span id="in-text">in</span>
+			<span id="out-text">out</span>
+			<div id="paper-in"></div>
+			<div id="paper-out"></div>
+		</div>
+	</div><!--data-role=content-->
+
+	<div page-role="footer">
+		<h2>縮尺計算機</h2>
+		<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+		<script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+		<script src="js/index.js"></script>
+	</div><!--data-role="footer"-->
+</div><!--data-role="page"-->
 </body>
 </html>
