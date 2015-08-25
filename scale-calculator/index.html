@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset='utf-8'>
+	<title>A版B版x縮尺計算機</title>
+	<style>
+	.example{
+			font-style: italic;
+			color: red;
+			font-size: 0.7em;
+			margin-left: 5px;
+		}
+	#paperwrapper {
+		positon: relative;
+	}
+	#paper-in {
+		position: absolute;
+		border: 1px solid blue;
+	}
+	#in-text {
+		background-color: blue;
+		opacity: 0.6;
+	}
+	#out-text {
+		background-color: red;
+		opacity: 0.6;
+	}
+	#paper-out {
+		position: absolute;
+		border: 1px solid red;
+	}
+	#formwrapper {
+		float:left;
+		width: 200px;
+		border: 1px solid black;
+	}
+	#paperwrapper {
+		margin-left: 210px;
+	}
+	</style>
+</head>
+<body>
+<h1>縮尺計算機</h1>
+<p>地図を倍率を変えて印刷するときに縮尺を計算する</p>
+<div id="formwrapper">
+<h2>印刷前[in]</h2>
+<p>版: <input id="edition_in" type="text"><br /><span class="example">a0, A1, b2, B3, etc.</span></p>
+<p>縮尺: <input id="scale_in" type="text"><br /><span class="example">25000, 50000, 200000, etc.</span></p>
+<h2>印刷後[out]</h2>
+<p>版: <input id="edition_out" type="text"><br /><span class="example">a0, A1, b2, B3, etc.</span></p>
+<p>縮尺: <span id="result"></span></p>
+</div>
+<div id="paperwrapper">
+	<span id="in-text">in</span>
+	<span id="out-text">out</span>
+	<div id="paper-in"></div>
+	<div id="paper-out"></div>
+</div>
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="js/index.js"></script>
+</body>
+</html>
