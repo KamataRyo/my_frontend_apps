@@ -1,13 +1,8 @@
 gulp       = require 'gulp'
 connect    = require 'gulp-connect'
 path       = require 'path'
-exec       = require 'gulp-exec'
-just_exec = (require 'child_process').exec
 compass    = require 'gulp-compass'
 coffee     = require 'gulp-coffee'
-minifyCSS  = require 'gulp-minify-css'
-cache      = require 'gulp-cached'
-gulpFilter = require 'gulp-filter'
 plumber    = require 'gulp-plumber'
 notify     = require 'gulp-notify'
 
@@ -60,7 +55,6 @@ gulp.task "compass", () ->
   gulp.src base + 'sass/*.scss'
     .pipe plumber(errorHandler: notify.onError '<%= error.message %>')
     .pipe compass options
-    #.pipe minifyCSS()
     .pipe gulp.dest base + 'css/'
 
 

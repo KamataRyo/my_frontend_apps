@@ -50,26 +50,48 @@
 	</div><!--data-role="header"-->
 
 	<div data-role="content">
-		<div id="formwrapper">
-			<h2>印刷前</h2>
-			<p class="example">版（a0, A1, b2, B3, etc.）</p>
-			<input id="edition_in" type="text">
-			<p>縮尺（25000, 50000, 200000, etc.）</p>
-			<input id="scale_in" type="text">
-			<p class="example optional">距離（オプション）</p>
-			<input id="distance_in" class="optional" type="text">
+		<form>
+			<div data-role="fieldcontain">
+				<h2>地図上での測定値（印刷前後）</h2>
+				<label for="metrics-input">測定値</label>
+				<input id="metrics-input" type="text" value="10cm">
+				<label for="metrics-input-example">例</label>
+				<input id="metrics-input-example" class="example" type="text" value="10cm, 20mm, 10mm2, etc." disabled="true">
+				<h3>測定値文字列のパース結果</h3>
+				<hr />
 
+				<h2>印刷前</h2>
+				<label for="edition-before">版</label>
+				<input id="edition-before" type="text" value="A4">
+				<label class="edition-before-example">例</label>
+				<input id="edition-before-example" class="example" type="text" value="a0, A1, b2, B3, etc." disabled="true">
+				
+				<label for="scale-before">縮尺</label>
+				<input id="scale-before" type="number" value="25000">
+				<label class="scale-before-example">例</label>
+				<input id="scale-before-example" class="example" type="text" value="25000, 50000, 200000, etc." disabled="true">
 
-			<h2>印刷後</h2>
-			<p>版: <input id="edition_out" type="text"><br /><span class="example">a0, A1, b2, B3, etc.</span></p>
-			<p>縮尺: <span id="result"></span></p>
-		</div>
-		<div id="paperwrapper">
-			<span id="in-text">in</span>
-			<span id="out-text">out</span>
-			<div id="paper-in"></div>
-			<div id="paper-out"></div>
-		</div>
+				<h3>実世界での測定値</h3>
+				<label for="metrics-before-output">値</label>
+				<input id="metrics-before-output" class="output" type="text">
+				<hr />
+
+				<h2>印刷後</h2>
+				<label for="edition-after">版</label>
+				<input id="edition-after" type="text" value="A3">
+
+				<label class="edition-after-example">例</label>
+				<input id="edition-after-example" class="example" type="text" value="a0, A1, b2, B3, etc." disabled="true">
+
+				<label for="scale-after">縮尺</label>
+				<input id="scale-after" type="number" class="output">
+
+				<h3>実世界での測定値</h3>
+				<label for="metrics-after-output">値</label>
+				<input id="metrics-after-output" class="output" type="text">
+			</div><!--data-role="fieldcontain"-->
+		</form>
+		
 	</div><!--data-role=content-->
 
 	<div page-role="footer">
@@ -79,5 +101,6 @@
 		<script src="js/index.js"></script>
 	</div><!--data-role="footer"-->
 </div><!--data-role="page"-->
+
 </body>
 </html>
