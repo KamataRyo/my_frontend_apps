@@ -70,9 +70,10 @@ $(function() {
           this.unit = '';
           this.input_dimension = 1;
         }
-        this.uit_dimension = unit_info[this.unit] != null ? unit_info[this.unit].dimension : 1;
+        this.unit_dimension = unit_info[this.unit] != null ? unit_info[this.unit].dimension : 1;
         this.unit_magnifier = unit_info[this.unit] != null ? unit_info[this.unit].magnifier : 1;
       }
+      this.dimension = this.unit_dimension * this.input_dimension;
       this.absValue = Math.abs(this.value);
       this.sign = this.absValue / this.value;
       this.baseAbsValue = Math.pow(this.absValue * this.unit_magnifier, 1 / (this.unit_dimension * this.input_dimension));

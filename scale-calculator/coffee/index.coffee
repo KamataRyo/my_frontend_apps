@@ -58,9 +58,10 @@ $ () ->
 				else
 					@unit = ''
 					@input_dimension = 1
-				@uit_dimension = if unit_info[@unit]? then unit_info[@unit].dimension else 1
+				@unit_dimension = if unit_info[@unit]? then unit_info[@unit].dimension else 1
 				@unit_magnifier = if unit_info[@unit]? then unit_info[@unit].magnifier else 1
 			
+			@dimension = @unit_dimension * @input_dimension
 			@absValue =Math.abs(@value)
 			@sign = @absValue / @value
 			@baseAbsValue = Math.pow (@absValue * @unit_magnifier), 1 / (@unit_dimension * @input_dimension)
@@ -137,8 +138,6 @@ $ () ->
 		c2 = $('input[name=scale-before]').data 'validated'
 		c3 = $('input[name=edition-before]').data 'validated'
 		c4 = $('input[name=edition-after]').data 'validated'
-
-
 
 		# scaleAfter
 		if c2 and c3 and c4
