@@ -62,9 +62,9 @@ gulp.task "compass", () ->
 gulp.task "coffee", () ->
   gulp.src base + 'coffee/*.coffee'
     .pipe plumber(errorHandler: notify.onError '<%= error.message %>')
-    .pipe coffee(bare: true)
+    .pipe coffee(bare: true).on 'error', (err) -> 
+      console.log err.stack   
     .pipe gulp.dest base + 'js/'
-
 
 
 gulp.task "reload", ["compass", "coffee"] , () ->

@@ -1,15 +1,38 @@
 $ () ->
-	edition_in = ''
-	scale_in = 0
-	distance_in = ''
-	edition_out = ''
-	units =
-		'μm': 0.000001
-		'mm': 0.001
-		'cm': 0.01
-		'm' : 1
-		'km': 1000
-	
+	metricsInput = ''
+	editionBefore = ''
+	scaleBefore = 0
+	editionAfter = ''
+
+	unit_info =
+		'μm':
+			dimension: 1
+			magnifier: 0.000001
+			export: false
+		'mm':
+			dimension: 1
+			magnifier: 0.001
+			export: true
+		'cm':
+			dimension: 1
+			magnifier: 0.01
+			export: true
+		'm' :
+			dimension: 1
+			magnifier: 1
+			export: true
+		'km':
+			dimension: 1
+			magnifier: 1000
+			export: true
+		'a':
+			dimension: 2
+			magnifier: 10
+			export: true
+		'ha':
+			dimension: 2
+			magnifier: 100
+			export: true
 
 
 	class Metrics
@@ -18,17 +41,41 @@ $ () ->
 		RE_UNIT      = /[A-Z,a-z]+/
 		RE_DIMENSION = /-?[0-9]+(.[0-9]+)?$/
 		constructor: (value) ->
-			@stringify = value.replace /\s+/g, ''
-			@isParsable = RE_METRICS.test @stringify
+			_string = value.replace /\s+/g, ''
+			@isParsable = RE_METRICS.test _string
+
+			@value = 1
+			@unit = ''
+			@unit_magnifier = 1
+			@input_dimension = 1
+			@unit_dimension = 1
+			
 			if @isParsable
-				@value      = parseFloat(RE_VALUE.exec @stringify)
-				if RE_UNIT.test @stringify
-					@unit   = RE_UNIT.exec @stringify
-					@dimension  = if RE_DIMENSION.test @stringify then parseFloat(RE_DIMENSION.exec @stringify) else 1
+				@value = parseFloat(RE_VALUE.exec _string)
+				if RE_UNIT.test _string
+					@unit   = RE_UNIT.exec _string
+					@input_dimension  = if RE_DIMENSION.test _string then parseFloat(RE_DIMENSION.exec _string) else 1
 				else
 					@unit = ''
-					@dimension = 1
-			# else raise err
+					@input_dimension = 1
+				@uit_dimension = if unit_info[@unit]? then unit_info[@unit].dimension else 1
+				@unit_magnifier = if unit_info[@unit]? then unit_info[@unit].magnifier else 1
+			
+			@absValue =Math.abs(@value)
+			@sign = @absValue / @value
+			@baseAbsValue = Math.pow (@absValue * @unit_magnifier), 1 / (@unit_dimension * @input_dimension)
+		stringfy: (opts) ->
+			unless opts? then opts = new Object()
+			value     = if opts['value']?     then opts['value']     else @value
+			value     = Math.round(value)
+			unit      = if opts['unit']?      then opts['unit']      else @unit
+			dimension = if opts['dimension']? then opts['dimension'] else @input_dimension
+			dimension = if dimension is 1 then '' else dimension
+			return value + unit + dimension
+		regenerate: (opts) ->
+			unless opts? then opts = new Object()
+			return new Metrics @.stringfy(opts)
+
 
 
 	class Edition
@@ -40,65 +87,141 @@ $ () ->
 			B:1414
 			C:1297
 		constructor: (value) ->
-			@stringify = value.replace /\s+/g, ''
-			@isParsable = RE_EDITION.test @stringify
+			_string = value.replace /\s+/g, ''
+			@isParsable = RE_EDITION.test _string
 			if @isParsable
-				@column = String(RE_COLUMN.exec @stringify).toUpperCase()
-				@size = parseInt(RE_SIZE.exec @stringify)
+				@column = String(RE_COLUMN.exec _string).toUpperCase()
+				@size = parseInt(RE_SIZE.exec _string)
 			# else raise err
-		getWidth = (opt) ->
-			long_width = Math.round(widths[@column] / Math.pow(2, (num / 2)))
-			short_width = Math.round(widths[@column] / Math.pow(2, ((num + 1) / 2)))
+		getWidth: (opt) ->
+			unless opt? then opt = 'L'
+			long_width = widths[@column] / Math.pow(2, (@size / 2))
+			short_width = widths[@column] / Math.pow(2, ((@size + 1) / 2))
 			switch opt.toUpperCase()
 				when 'SHORT','SHORTER','S' then return  short_width
 				when 'LONG','LONGER','L' then return long_width
 
 
+	# inputフォーム個別の,入力値のvalidation関数の定義
+	# name属性がキー
+	validate =
+		'metrics-input': () ->
+			$elem = $('input[name=metrics-input]')
+			metricsInput = new Metrics $elem.val()
+			$elem.data 'validated', metricsInput.isParsable
+			$('#metrics-input-parsed-value').text metricsInput.value
+			$('#metrics-input-parsed-unit').text metricsInput.unit
+			$('#metrics-input-parsed-unit-magnifier').text metricsInput.unit_magnifier
+			$('#metrics-input-parsed-unit-dimension').text metricsInput.unit_dimension
+			$('#metrics-input-parsed-input-dimension').text metricsInput.input_dimension
+			$('#metrics-input-parsed-baseAbsValue').text metricsInput.baseAbsValue
 
-	m = new Metrics '0.101cm'
-	console.log m.value + ':' + m.unit + ':' + m.dimension
-	e = new Edition 'B11'
+		'edition-before' : () ->
+			$elem = $('input[name=edition-before]')
+			editionBefore = new Edition $elem.val()		
+			$elem.data 'validated', editionBefore.isParsable
 
+		'scale-before' : () ->
+			scaleBefore = $('input[name=scale-before]').val()
+			$('input[name=scale-before]').data 'validated', true
 
-	getWidth = (ab, num) ->
-		if ab.toUpperCase() is 'A'
-			return Math.round(1189 / Math.pow(2, (num / 2)))
-		if ab.toUpperCase() is 'B'
-			return Math.round(1456 / Math.pow(2, (num / 2)))
+		'edition-after' : () ->
+			$elem = $('input[name=edition-after]')
+			editionAfter = new Edition $elem.val()		
+			$elem.data 'validated', editionAfter.isParsable
+	
 
-	calcValues = () ->
-		ab_in = edition_in[0]
-		ab_out = edition_out[0]
-		num_in = edition_in[1..]
-		num_out = edition_out[1..]
-
-
-		num = distance_in.length
-		distance_in_unit = if distance_in[num-1] in [0..9] then distance_in[num-1..num] else distance_in[num-2..num]
-		distance_in_num = distance_in[0..(num - distance_in_unit.length - 1)] * units[distance_in_unit]
-		$('#distance_in_result').val distance_in_num * scale_in
-
-
-		r_in = getWidth(ab_in, num_in)
-		r_out =  getWidth(ab_out, num_out)
-		scale_out = Math.round((r_in / r_out) * scale_in)
-
-		$('#scale_out').val scale_out
+	# 計算してみる
+	tryCalc = () ->
+		c1 = $('input[name=metrics-input]').data 'validated'
+		c2 = $('input[name=scale-before]').data 'validated'
+		c3 = $('input[name=edition-before]').data 'validated'
+		c4 = $('input[name=edition-after]').data 'validated'
 
 
 
-	$('#edition_in').keyup () ->
-		edition_in = $(this).val()
-		calcValues()
+		# scaleAfter
+		if c2 and c3 and c4
+			scaleAfter = scaleBefore * (editionAfter.getWidth() / editionBefore.getWidth())
+			$('input[name=scale-after]').val Math.round(scaleAfter)
+		else
+			$('input[name=scale-after]').val ''
 
-	$('#scale_in').keyup () ->
-		scale_in = $(this).val()
-		calcValues()
+		# 測定値換算（before）
+		if c1 and c2
+			m1 = metricsInput.regenerate value: metricsInput.value * scaleBefore
+			$('input[name=metrics-before-output]').val m1.stringfy()
+		else
+			$('input[name=metrics-before-output]').val ''
 
-	$('#distance_in').keyup () ->
-		distance_in = $(this).val()
-		calcValues()
+		# 測定値換算（after）
+		if c1 and c2 and c3 and c4
+			m2 = metricsInput.regenerate value: metricsInput.value * scaleAfter
+			$('input[name=metrics-after-output]').val m2.stringfy()
+		else
+			$('input[name=metrics-after-output]').val ''
+		
+		
 
-	$('#edition_out').keyup () ->
-		edition_out = $(this).val()
-		calcValues()
+	# inputフォームの入力値validationアイコンを生成、設置
+	# labelを持つforで、data-validated属性を持ち、かつ、example,outputクラスを持たないものにのみ有効化される
+	$('input').each (i, elem) ->
+		if $(elem).attr("name")? and $(elem).attr("data-validated")? and not $(elem).hasClass('example') and not $(elem).hasClass('output')
+			name = $(elem).attr("name")
+			if $("label[for=#{name}]")?
+				$("label[for=#{name}]").append $("<i id='notation-#{name}' class='fa'></i>")
+				$("#notation-#{name}").css 'opacity', '0.4'
+				#keyupの動作（validateの実行と、validationアイコンの更新）をイテレーションで定義
+				$(elem).keyup () ->
+					if validate[name]? then validate[name]()# validationは個別に実装,name属性がキー
+					if $(this).data("validated")
+						$("#notation-#{name}")
+							.removeClass 'fa-exclamation-triangle'
+							.addClass 'fa-check-circle'
+							.css 'color', 'green'
+					else
+						$("#notation-#{name}")
+							.removeClass 'fa-check-circle'
+							.addClass 'fa-exclamation-triangle'
+							.css 'color', 'red'
+					tryCalc()
+				# 最初に実行しておく
+				$(elem).keyup()
+	
+
+	# toggle機能の定義
+	##toggleアイコンをprepend
+	##初期状態でtoggleにするにはstyle=display:none
+	$('.toggle-next').each (i, elem) ->
+		$(elem).prepend '<i class="fa"></i>'
+		$i = $(elem).children 'i'
+		display = $(elem).next().css 'display'
+		if display is 'none'
+			$i.addClass 'fa-angle-double-right'
+		else
+			$i.addClass 'fa-angle-double-down'
+		
+
+	## clickableなスタイル定義
+	$('.toggle-next').hover () ->
+		$(this)
+			.css 'cursor', 'pointer'
+			.css 'opacity', '0.6'
+	,() ->
+		$(this)
+		 	.css 'opacity', '1'
+
+
+	## toggleの動作の定義
+	$('.toggle-next').click () ->
+		display = $(this).next().css 'display'
+		if display is 'none'
+			$(this).children('i')
+				.removeClass 'fa-angle-double-right'
+				.addClass 'fa-angle-double-down'
+			$(this).next().show 'fast'
+		else
+			$(this).children('i')
+				.removeClass 'fa-angle-double-down'
+				.addClass 'fa-angle-double-right'
+			$(this).next().hide 'fast'

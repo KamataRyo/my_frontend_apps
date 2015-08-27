@@ -4,6 +4,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 	<title>A版B版x縮尺計算機</title>
 	<style>
 	/*.example{
@@ -49,52 +50,111 @@
 		<p>地図を倍率を変えて印刷するとき、縮尺がどうなるかを計算する</p>
 	</div><!--data-role="header"-->
 
-	<div data-role="content">
-		<form>
+	<div role="main">
+		<h2  class="toggle-next">地図上での測定値（印刷前後）※オプション</h2>
+		<form id="form-metrics-input" display="none">
 			<div data-role="fieldcontain">
-				<h2>地図上での測定値（印刷前後）</h2>
 				<label for="metrics-input">測定値</label>
-				<input id="metrics-input" type="text" value="10cm">
+				<input name="metrics-input" type="text" value="10cm" data-validated="false">
 				<label for="metrics-input-example">例</label>
-				<input id="metrics-input-example" class="example" type="text" value="10cm, 20mm, 10mm2, etc." disabled="true">
-				<h3>測定値文字列のパース結果</h3>
-				<hr />
-
-				<h2>印刷前</h2>
-				<label for="edition-before">版</label>
-				<input id="edition-before" type="text" value="A4">
-				<label class="edition-before-example">例</label>
-				<input id="edition-before-example" class="example" type="text" value="a0, A1, b2, B3, etc." disabled="true">
-				
-				<label for="scale-before">縮尺</label>
-				<input id="scale-before" type="number" value="25000">
-				<label class="scale-before-example">例</label>
-				<input id="scale-before-example" class="example" type="text" value="25000, 50000, 200000, etc." disabled="true">
-
-				<h3>実世界での測定値</h3>
-				<label for="metrics-before-output">値</label>
-				<input id="metrics-before-output" class="output" type="text">
-				<hr />
-
-				<h2>印刷後</h2>
-				<label for="edition-after">版</label>
-				<input id="edition-after" type="text" value="A3">
-
-				<label class="edition-after-example">例</label>
-				<input id="edition-after-example" class="example" type="text" value="a0, A1, b2, B3, etc." disabled="true">
-
-				<label for="scale-after">縮尺</label>
-				<input id="scale-after" type="number" class="output">
-
-				<h3>実世界での測定値</h3>
-				<label for="metrics-after-output">値</label>
-				<input id="metrics-after-output" class="output" type="text">
-			</div><!--data-role="fieldcontain"-->
-		</form>
+				<input name="metrics-input-example" class="example" type="text" value="10cm, 20mm, 10mm2, etc." disabled="true" data-validated="false">
+			</div><!-- data-role="fieldcontain"-->
+		</form><!-- id="form-metrics-input"-->
 		
-	</div><!--data-role=content-->
+		<h3 class="toggle-next">測定値文字列のパース結果</h3>
+		<div style="display:none">
+		<table>
+			<tbody>
+				<tr>
+					<th>値</th>
+					<td id="metrics-input-parsed-value"></td>
+				</tr>
+				<tr>
+					<th>単位</th>
+					<td id="metrics-input-parsed-unit"></td>
+				</tr>
+				<tr>
+					<th>単位の倍率</th>
+					<td id="metrics-input-parsed-unit-magnifier"></td>
+				</tr>
+				<tr>
+					<th>単位の次元</th>
+					<td id="metrics-input-parsed-unit-dimension"></td>
+				</tr>
+				<tr>
+					<th>入力値の次元</th>
+					<td id="metrics-input-parsed-input-dimension"></td>
+				</tr>			
+				<tr>
+					<th>基底次元での値</th>
+					<td id="metrics-input-parsed-baseAbsValue"></td>
+				</tr>
+			</tbody>
+		</table>
+		</div>
+			
+		<hr>
+		
+		<h2 class="toggle-next">印刷前</h2>
+			<div>
+			<form id="edition-before">
+				<div data-role="fieldcontain">
+					<label for="edition-before">版</label>
+					<input name="edition-before" type="text" value="A4" data-validated="false">
+					<label class="edition-before-example">例</label>
+					<input name="edition-before-example" class="example" type="text" value="a0, A1, b2, B3, etc." disabled="true" data-validated="false">
+				</div><!-- data-role="fieldcontain"-->
+			</form><!--edition-before-->
+			
+			<form>
+				<div data-role="fieldcontain">
+					<label for="scale-before">縮尺</label>
+					<input name="scale-before" type="number" value="25000" data-validated="false">
+				</div><!-- data-role="fieldcontain"-->
+			</form>
 
-	<div page-role="footer">
+			<form>
+				<div data-role="fieldcontain">
+					<label class="scale-before-example">例</label>
+					<input name="scale-before-example" class="example" type="text" value="25000, 50000, 200000, etc." disabled="true" data-validated="false">
+				</div><!--data-role="fieldcontain"-->
+			</form>
+			
+			<h3 class="toggle-next">実世界での測定値</h3>
+			<form>
+				<div data-role="fieldcontain">
+					<label for="metrics-before-output">値</label>
+					<input name="metrics-before-output" class="output" type="text" data-validated="false">
+				</div><!-- data-role="fieldcontain"-->
+			</form>
+		</div><!--印刷前-->
+		<hr />
+
+		<h2 class="toggle-next">印刷後</h2>
+		<div>
+			<form>
+				<div data-role="fieldcontain">	
+					<label for="edition-after">版</label>
+					<input name="edition-after" type="text" value="A3" data-validated="false">
+					<label class="edition-after-example">例</label>
+					<input name="edition-after-example" class="example" type="text" value="a0, A1, b2, B3, etc." disabled="true" data-validated="false">
+					<label for="scale-after">縮尺</label>
+					<input name="scale-after" type="number" class="output" data-validated="false">
+				</div><!--data-role="fieldcontain"-->
+			</form>
+	
+			<h3 class="toggle-next">実世界での測定値</h3>
+			<form>
+				<div data-role="fieldcontain">	
+					<label for="metrics-after-output">値</label>
+					<input name="metrics-after-output" class="output" type="text" data-validated="false">
+				</div><!--data-role="fieldcontain"-->
+			</form>
+		</div><!--印刷後-->
+		
+	</div><!--role=main-->
+
+	<div data-role="footer">
 		<h2>縮尺計算機</h2>
 		<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 		<script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
