@@ -1,56 +1,51 @@
 $(function() {
-  var Edition, Metrics, editionAfter, editionBefore, metricsInput, scaleBefore, tryCalc, unit_info, validate;
+  var Edition, Metrics, editionAfter, editionBefore, metricsInput, scaleBefore, tryCalc, unit_info, validate, var_dump;
   metricsInput = '';
   editionBefore = '';
   scaleBefore = 0;
   editionAfter = '';
   unit_info = {
     'μm': {
-      dimension: 1,
       magnifier: 0.000001,
-      "export": false
+      exportable: false
     },
     'mm': {
-      dimension: 1,
       magnifier: 0.001,
-      "export": true
+      exportable: true
     },
     'cm': {
-      dimension: 1,
       magnifier: 0.01,
-      "export": true
+      exportable: true
+    },
+    'dm': {
+      magnifier: 0.1,
+      exportable: false
     },
     'm': {
-      dimension: 1,
       magnifier: 1,
-      "export": true
+      exportable: true
+    },
+    'dam': {
+      magnifier: 10,
+      exportable: false
+    },
+    'hm': {
+      magnifier: 100,
+      exportable: false
     },
     'km': {
-      dimension: 1,
       magnifier: 1000,
-      "export": true
-    },
-    'a': {
-      dimension: 2,
-      magnifier: 10,
-      "export": true
-    },
-    'ha': {
-      dimension: 2,
-      magnifier: 100,
-      "export": true
+      exportable: true
     }
   };
   Metrics = (function() {
-    var RE_DIMENSION, RE_METRICS, RE_UNIT, RE_VALUE;
+    var RE_METRICS, RE_UNIT, RE_VALUE;
 
-    RE_METRICS = /^-?[0-9]+(.[0-9]+)?([A-Z,a-z]+)?(-?[0-9]+(.[0-9]+)?)?$/;
+    RE_METRICS = /^[\-\+]?[\d,]+(\.\d+)?[a-z]+$/i;
 
-    RE_VALUE = /^-?[0-9]+(.[0-9]+)?/;
+    RE_VALUE = /^[\-\+]?[\d,]+(\.\d+)?/;
 
-    RE_UNIT = /[A-Z,a-z]+/;
-
-    RE_DIMENSION = /-?[0-9]+(.[0-9]+)?$/;
+    RE_UNIT = /[a-z]+$/i;
 
     function Metrics(value) {
       var _string;
@@ -58,38 +53,27 @@ $(function() {
       this.isParsable = RE_METRICS.test(_string);
       this.value = 1;
       this.unit = '';
-      this.unit_magnifier = 1;
-      this.input_dimension = 1;
-      this.unit_dimension = 1;
+      this.magnifier = 1;
       if (this.isParsable) {
         this.value = parseFloat(RE_VALUE.exec(_string));
         if (RE_UNIT.test(_string)) {
           this.unit = RE_UNIT.exec(_string);
-          this.input_dimension = RE_DIMENSION.test(_string) ? parseFloat(RE_DIMENSION.exec(_string)) : 1;
         } else {
           this.unit = '';
-          this.input_dimension = 1;
         }
-        this.unit_dimension = unit_info[this.unit] != null ? unit_info[this.unit].dimension : 1;
-        this.unit_magnifier = unit_info[this.unit] != null ? unit_info[this.unit].magnifier : 1;
+        this.magnifier = unit_info[this.unit] != null ? unit_info[this.unit].magnifier : 1;
       }
-      this.dimension = this.unit_dimension * this.input_dimension;
-      this.absValue = Math.abs(this.value);
-      this.sign = this.absValue / this.value;
-      this.baseAbsValue = Math.pow(this.absValue * this.unit_magnifier, 1 / (this.unit_dimension * this.input_dimension));
+      this.absValue = this.value * this.magnifier;
     }
 
     Metrics.prototype.stringfy = function(opts) {
-      var dimension, unit, value;
+      var unit, value;
       if (opts == null) {
         opts = new Object();
       }
       value = opts['value'] != null ? opts['value'] : this.value;
-      value = Math.round(value);
       unit = opts['unit'] != null ? opts['unit'] : this.unit;
-      dimension = opts['dimension'] != null ? opts['dimension'] : this.input_dimension;
-      dimension = dimension === 1 ? '' : dimension;
-      return value + unit + dimension;
+      return value + unit;
     };
 
     Metrics.prototype.regenerate = function(opts) {
@@ -97,6 +81,28 @@ $(function() {
         opts = new Object();
       }
       return new Metrics(this.stringfy(opts));
+    };
+
+    Metrics.prototype.optimize = function() {
+      var min_x, minifier, optimum_unit, props, unit, unit_info_ex, x;
+      unit_info_ex = new Object();
+      minifier = function(x) {
+        return x + 100 / x;
+      };
+      min_x = minifier(this.absValue);
+      optimum_unit = this.unit;
+      for (unit in unit_info) {
+        props = unit_info[unit];
+        if (props.exportable) {
+          x = this.absValue / props.magnifier;
+          unit_info_ex[unit] = x;
+          if (minifier(x < min_x)) {
+            min_x = minifier(x);
+            optimum_unit = unit;
+          }
+        }
+      }
+      return new Metrics((this.absValue / unit_info[optimum_unit].magnifier).toString() + optimum_unit);
     };
 
     return Metrics;
@@ -128,39 +134,46 @@ $(function() {
     }
 
     Edition.prototype.getWidth = function(opt) {
-      var long_width, short_width;
       if (opt == null) {
         opt = 'L';
       }
-      long_width = widths[this.column] / Math.pow(2, this.size / 2);
-      short_width = widths[this.column] / Math.pow(2, (this.size + 1) / 2);
+      this.long_width = widths[this.column] / Math.pow(2, this.size / 2);
+      this.short_width = widths[this.column] / Math.pow(2, (this.size + 1) / 2);
       switch (opt.toUpperCase()) {
         case 'SHORT':
         case 'SHORTER':
         case 'S':
-          return short_width;
+          return this.short_width;
         case 'LONG':
         case 'LONGER':
         case 'L':
-          return long_width;
+          return this.long_width;
       }
     };
 
     return Edition;
 
   })();
+  var_dump = function(obj) {
+    var key, result, value;
+    result = '<table>';
+    for (key in obj) {
+      value = obj[key];
+      if (typeof value !== 'function') {
+        result += "<tr><th>" + key + "</th><td>" + value + "</td></tr>";
+      }
+    }
+    result += '</table>';
+    return result;
+  };
   validate = {
     'metrics-input': function() {
       var $elem;
       $elem = $('input[name=metrics-input]');
       metricsInput = new Metrics($elem.val());
       $elem.data('validated', metricsInput.isParsable);
-      $('#metrics-input-parsed-value').text(metricsInput.value);
-      $('#metrics-input-parsed-unit').text(metricsInput.unit);
-      $('#metrics-input-parsed-unit-magnifier').text(metricsInput.unit_magnifier);
-      $('#metrics-input-parsed-unit-dimension').text(metricsInput.unit_dimension);
-      $('#metrics-input-parsed-input-dimension').text(metricsInput.input_dimension);
-      return $('#metrics-input-parsed-baseAbsValue').text(metricsInput.baseAbsValue);
+      $('#parsed-metrics-input').children().remove();
+      return $('#parsed-metrics-input').append($(var_dump(metricsInput)));
     },
     'edition-before': function() {
       var $elem;
@@ -193,16 +206,18 @@ $(function() {
     }
     if (c1 && c2) {
       m1 = metricsInput.regenerate({
-        value: metricsInput.sign * Math.pow(metricsInput.absValue * scaleBefore, metricsInput.dimension)
+        value: metricsInput.value * scaleBefore
       });
+      m1 = m1.optimize();
       $('input[name=metrics-before-output]').val(m1.stringfy());
     } else {
       $('input[name=metrics-before-output]').val('');
     }
     if (c1 && c2 && c3 && c4) {
       m2 = metricsInput.regenerate({
-        value: metricsInput.sign * Math.pow(metricsInput.absValue * scaleAfter, metricsInput.dimension)
+        value: metricsInput.value * scaleAfter
       });
+      m2 = m2.optimize();
       return $('input[name=metrics-after-output]').val(m2.stringfy());
     } else {
       return $('input[name=metrics-after-output]').val('');
