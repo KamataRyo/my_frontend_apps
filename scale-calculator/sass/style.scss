@@ -1,0 +1,34 @@
+@import "compass";
+
+body {
+	font-size: 12px;
+}
+div[role=main] {
+	padding: 0 50px;
+}
+
+h2 {
+	font-size: 1.5em;
+}
+
+h3 {
+	font-size: 0.8em;
+	color: rgb(128,128,128);
+}
+
+div[data-role=fieldcontain] {
+		padding-left: 40px;
+	}
+
+.toggle-next {
+	&:hover {
+		@include border-radius(5px);
+		background-color: rgba(0,0,0,0.1);
+		text-shadow: none;
+	}
+}
+
+
+input.output {
+	background-color: rgba(216,32,32,0.1);
+}

@@ -192,7 +192,7 @@ $(function() {
     }
     if (c1 && c2) {
       m1 = metricsInput.regenerate({
-        value: metricsInput.value * scaleBefore
+        value: metricsInput.sign * Math.pow(metricsInput.absValue * scaleBefore, metricsInput.dimension)
       });
       $('input[name=metrics-before-output]').val(m1.stringfy());
     } else {
@@ -200,7 +200,7 @@ $(function() {
     }
     if (c1 && c2 && c3 && c4) {
       m2 = metricsInput.regenerate({
-        value: metricsInput.value * scaleAfter
+        value: metricsInput.sign * Math.pow(metricsInput.absValue * scaleAfter, metricsInput.dimension)
       });
       return $('input[name=metrics-after-output]').val(m2.stringfy());
     } else {
@@ -213,7 +213,7 @@ $(function() {
       name = $(elem).attr("name");
       if ($("label[for=" + name + "]") != null) {
         $("label[for=" + name + "]").append($("<i id='notation-" + name + "' class='fa'></i>"));
-        $("#notation-" + name).css('opacity', '0.4');
+        $("#notation-" + name).css('opacity', '0.4').css('margin-left', '5px');
         $(elem).keyup(function() {
           if (validate[name] != null) {
             validate[name]();
@@ -241,9 +241,7 @@ $(function() {
     }
   });
   $('.toggle-next').hover(function() {
-    return $(this).css('cursor', 'pointer').css('opacity', '0.6');
-  }, function() {
-    return $(this).css('opacity', '1');
+    return $(this).css('cursor', 'pointer');
   });
   return $('.toggle-next').click(function() {
     var display;

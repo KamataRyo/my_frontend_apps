@@ -149,14 +149,14 @@ $ () ->
 
 		# 測定値換算（before）
 		if c1 and c2
-			m1 = metricsInput.regenerate value: metricsInput.value * scaleBefore
+			m1 = metricsInput.regenerate value: metricsInput.sign * Math.pow(metricsInput.absValue * scaleBefore, metricsInput.dimension)
 			$('input[name=metrics-before-output]').val m1.stringfy()
 		else
 			$('input[name=metrics-before-output]').val ''
 
 		# 測定値換算（after）
 		if c1 and c2 and c3 and c4
-			m2 = metricsInput.regenerate value: metricsInput.value * scaleAfter
+			m2 = metricsInput.regenerate value: metricsInput.sign * Math.pow(metricsInput.absValue * scaleAfter, metricsInput.dimension)
 			$('input[name=metrics-after-output]').val m2.stringfy()
 		else
 			$('input[name=metrics-after-output]').val ''
@@ -170,7 +170,9 @@ $ () ->
 			name = $(elem).attr("name")
 			if $("label[for=#{name}]")?
 				$("label[for=#{name}]").append $("<i id='notation-#{name}' class='fa'></i>")
-				$("#notation-#{name}").css 'opacity', '0.4'
+				$("#notation-#{name}")
+					.css 'opacity', '0.4'
+					.css 'margin-left', '5px'
 				#keyupの動作（validateの実行と、validationアイコンの更新）をイテレーションで定義
 				$(elem).keyup () ->
 					if validate[name]? then validate[name]()# validationは個別に実装,name属性がキー
@@ -204,13 +206,8 @@ $ () ->
 
 	## clickableなスタイル定義
 	$('.toggle-next').hover () ->
-		$(this)
-			.css 'cursor', 'pointer'
-			.css 'opacity', '0.6'
-	,() ->
-		$(this)
-		 	.css 'opacity', '1'
-
+		$(this).css 'cursor', 'pointer'
+	
 
 	## toggleの動作の定義
 	$('.toggle-next').click () ->

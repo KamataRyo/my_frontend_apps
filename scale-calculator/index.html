@@ -5,117 +5,55 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-	<title>A版B版x縮尺計算機</title>
-	<style>
-	/*.example{
-			font-style: italic;
-			color: red;
-			font-size: 0.7em;
-			margin-left: 5px;
-		}
-	#paperwrapper {
-		positon: relative;
-	}
-	#paper-in {
-		position: absolute;
-		border: 1px solid blue;
-	}
-	#in-text {
-		background-color: blue;
-		opacity: 0.6;
-	}
-	#out-text {
-		background-color: red;
-		opacity: 0.6;
-	}
-	#paper-out {
-		position: absolute;
-		border: 1px solid red;
-	}
-	#formwrapper {
-		float:left;
-		width: 200px;
-		border: 1px solid black;
-	}
-	#paperwrapper {
-		margin-left: 210px;
-	}*/
-	</style>
+	<link rel="stylesheet" href="css/style.css" />
+	<title>縮尺計算機</title>
 </head>
 <body>
 <div data-role="page">
 
 	<div data-role="header">
 		<h1>縮尺計算機</h1>
-		<p>地図を倍率を変えて印刷するとき、縮尺がどうなるかを計算する</p>
+		地図を倍率を変えて印刷するとき、縮尺がどうなるかを計算します。</p>
 	</div><!--data-role="header"-->
 
 	<div role="main">
-		<h2  class="toggle-next">地図上での測定値（印刷前後）※オプション</h2>
-		<form id="form-metrics-input" display="none">
-			<div data-role="fieldcontain">
-				<label for="metrics-input">測定値</label>
-				<input name="metrics-input" type="text" value="10cm" data-validated="false">
-				<label for="metrics-input-example">例</label>
-				<input name="metrics-input-example" class="example" type="text" value="10cm, 20mm, 10mm2, etc." disabled="true" data-validated="false">
-			</div><!-- data-role="fieldcontain"-->
-		</form><!-- id="form-metrics-input"-->
-		
-		<h3 class="toggle-next">測定値文字列のパース結果</h3>
-		<div style="display:none">
-		<table>
-			<tbody>
-				<tr>
-					<th>値</th>
-					<td id="metrics-input-parsed-value"></td>
-				</tr>
-				<tr>
-					<th>単位</th>
-					<td id="metrics-input-parsed-unit"></td>
-				</tr>
-				<tr>
-					<th>単位の倍率</th>
-					<td id="metrics-input-parsed-unit-magnifier"></td>
-				</tr>
-				<tr>
-					<th>単位の次元</th>
-					<td id="metrics-input-parsed-unit-dimension"></td>
-				</tr>
-				<tr>
-					<th>入力値の次元</th>
-					<td id="metrics-input-parsed-input-dimension"></td>
-				</tr>			
-				<tr>
-					<th>基底次元での値</th>
-					<td id="metrics-input-parsed-baseAbsValue"></td>
-				</tr>
-			</tbody>
-		</table>
-		</div>
+
+		<h2 class="toggle-next">地図上での測定値※オプション</h2>
+		<div><!--for toggle-->
+			<h3 class="toggle-next">測定値入力</h3>
+			<form id="form-metrics-input" display="none">
+				<div data-role="fieldcontain">
+					<label for="metrics-input">測定値</label>
+					<input name="metrics-input" type="text" value="10cm" data-validated="false">
+					<label for="metrics-input-example">入力例</label>
+					<input name="metrics-input-example" class="example" type="text" value="10cm, 20mm, 10mm2, etc." disabled="true" data-validated="false">
+				</div><!-- data-role="fieldcontain"-->
+			</form><!-- id="form-metrics-input"-->
 			
+			<h3 class="toggle-next">測定値文字列のパース結果</h3>
+			<div style="display:none"></div>
+		</div><!--for toggle-->
+
 		<hr>
 		
 		<h2 class="toggle-next">印刷前</h2>
-			<div>
+		<div><!-- for h2 toggle-->
+			<h3 class="toggle-next">印刷前の版を入力</h3>
 			<form id="edition-before">
 				<div data-role="fieldcontain">
 					<label for="edition-before">版</label>
 					<input name="edition-before" type="text" value="A4" data-validated="false">
-					<label class="edition-before-example">例</label>
+					<label class="edition-before-example">入力例</label>
 					<input name="edition-before-example" class="example" type="text" value="a0, A1, b2, B3, etc." disabled="true" data-validated="false">
 				</div><!-- data-role="fieldcontain"-->
 			</form><!--edition-before-->
-			
+
+			<h3 class="toggle-next">印刷前の縮尺を入力</h3>
 			<form>
 				<div data-role="fieldcontain">
 					<label for="scale-before">縮尺</label>
 					<input name="scale-before" type="number" value="25000" data-validated="false">
-				</div><!-- data-role="fieldcontain"-->
-			</form>
-
-			<form>
-				<div data-role="fieldcontain">
-					<label class="scale-before-example">例</label>
+					<label class="scale-before-example">入力例</label>
 					<input name="scale-before-example" class="example" type="text" value="25000, 50000, 200000, etc." disabled="true" data-validated="false">
 				</div><!--data-role="fieldcontain"-->
 			</form>
@@ -123,21 +61,29 @@
 			<h3 class="toggle-next">実世界での測定値</h3>
 			<form>
 				<div data-role="fieldcontain">
-					<label for="metrics-before-output">値</label>
+					<label for="metrics-before-output">実際の値</label>
 					<input name="metrics-before-output" class="output" type="text" data-validated="false">
 				</div><!-- data-role="fieldcontain"-->
 			</form>
-		</div><!--印刷前-->
-		<hr />
+		</div><!-- for h2 toggle-->
+
+		<hr>
 
 		<h2 class="toggle-next">印刷後</h2>
-		<div>
+		<div><!-- for h2 toggle-->
+			<h3 class="toggle-next">印刷後の版を入力</h3>
 			<form>
-				<div data-role="fieldcontain">	
+				<div data-role="fieldcontain">
 					<label for="edition-after">版</label>
 					<input name="edition-after" type="text" value="A3" data-validated="false">
-					<label class="edition-after-example">例</label>
+					<label class="edition-after-example">入力例</label>
 					<input name="edition-after-example" class="example" type="text" value="a0, A1, b2, B3, etc." disabled="true" data-validated="false">
+				</div>
+			</form>
+
+			<h3 class="toggle-next">出力</h3>
+			<form>
+				<div data-role="fieldcontain">
 					<label for="scale-after">縮尺</label>
 					<input name="scale-after" type="number" class="output" data-validated="false">
 				</div><!--data-role="fieldcontain"-->
@@ -146,13 +92,16 @@
 			<h3 class="toggle-next">実世界での測定値</h3>
 			<form>
 				<div data-role="fieldcontain">	
-					<label for="metrics-after-output">値</label>
+					<label for="metrics-after-output">実際の値</label>
 					<input name="metrics-after-output" class="output" type="text" data-validated="false">
 				</div><!--data-role="fieldcontain"-->
 			</form>
-		</div><!--印刷後-->
-		
+		</div><!-- for h2 toggle-->
+
 	</div><!--role=main-->
+
+
+
 
 	<div data-role="footer">
 		<h2>縮尺計算機</h2>
@@ -160,6 +109,7 @@
 		<script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 		<script src="js/index.js"></script>
 	</div><!--data-role="footer"-->
+
 </div><!--data-role="page"-->
 
 </body>
