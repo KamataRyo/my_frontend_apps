@@ -41,9 +41,9 @@ $(function() {
   Metrics = (function() {
     var RE_METRICS, RE_UNIT, RE_VALUE;
 
-    RE_METRICS = /^[\-\+]?[\d,]+(\.\d+)?[a-z]+$/i;
+    RE_METRICS = /^[-\+]?[\d,]+(\.\d+)?[a-z]+$/i;
 
-    RE_VALUE = /^[\-\+]?[\d,]+(\.\d+)?/;
+    RE_VALUE = /^[-\+]?[\d,]+(\.\d+)?/;
 
     RE_UNIT = /[a-z]+$/i;
 

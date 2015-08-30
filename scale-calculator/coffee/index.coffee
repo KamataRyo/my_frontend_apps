@@ -33,8 +33,8 @@ $ () ->
 
 
 	class Metrics
-		RE_METRICS   = /^[\-\+]?[\d,]+(\.\d+)?[a-z]+$/i
-		RE_VALUE     = /^[\-\+]?[\d,]+(\.\d+)?/
+		RE_METRICS   = /^[-\+]?[\d,]+(\.\d+)?[a-z]+$/i
+		RE_VALUE     = /^[-\+]?[\d,]+(\.\d+)?/
 		RE_UNIT      = /[a-z]+$/i
 		constructor: (value) ->
 			_string = value.replace /\s+/g, ''
@@ -43,7 +43,7 @@ $ () ->
 			@value = 1
 			@unit = ''
 			@magnifier = 1
-			
+
 			if @isParsable
 				@value = parseFloat(RE_VALUE.exec _string)
 				if RE_UNIT.test _string
@@ -120,11 +120,11 @@ $ () ->
 			$elem.data 'validated', metricsInput.isParsable
 			$('#parsed-metrics-input').children().remove()
 			$('#parsed-metrics-input').append $(var_dump(metricsInput))
-			
+
 
 		'edition-before' : () ->
 			$elem = $('input[name=edition-before]')
-			editionBefore = new Edition $elem.val()		
+			editionBefore = new Edition $elem.val()
 			$elem.data 'validated', editionBefore.isParsable
 
 		'scale-before' : () ->
@@ -133,9 +133,9 @@ $ () ->
 
 		'edition-after' : () ->
 			$elem = $('input[name=edition-after]')
-			editionAfter = new Edition $elem.val()		
+			editionAfter = new Edition $elem.val()
 			$elem.data 'validated', editionAfter.isParsable
-	
+
 
 	# 計算してみる
 	tryCalc = () ->
@@ -166,8 +166,8 @@ $ () ->
 			$('input[name=metrics-after-output]').val m2.stringfy()
 		else
 			$('input[name=metrics-after-output]').val ''
-		
-		
+
+
 
 	# inputフォームの入力値validationアイコンを生成、設置
 	# labelを持つforで、data-validated属性を持ち、かつ、example,outputクラスを持たないものにのみ有効化される
@@ -195,7 +195,7 @@ $ () ->
 					tryCalc()
 				# 最初に実行しておく
 				$(elem).keyup()
-	
+
 
 	# toggle機能の定義
 	##toggleアイコンをprepend
@@ -208,12 +208,12 @@ $ () ->
 			$i.addClass 'fa-angle-double-right'
 		else
 			$i.addClass 'fa-angle-double-down'
-		
+
 
 	## clickableなスタイル定義
 	$('.toggle-next').hover () ->
 		$(this).css 'cursor', 'pointer'
-	
+
 
 	## toggleの動作の定義
 	$('.toggle-next').click () ->
